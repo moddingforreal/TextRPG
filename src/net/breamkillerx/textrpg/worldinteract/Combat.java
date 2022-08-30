@@ -19,8 +19,6 @@ public class Combat{
     Scanner scanner = new Scanner(System.in);
     Enemy currEnemy = new Enemy();
 
-    Random random = new Random();
-
     public void VictorLoot(){
         double loot =Math.random()*100;
         HashMap<String, Integer> player = PlayerEntity.playerAttributes;
@@ -129,7 +127,6 @@ public class Combat{
                             System.out.println("You do not have any items!");
                             repeat = true;
                         }
-
                         break;
                 }
             }
@@ -188,32 +185,19 @@ public class Combat{
             System.out.println("You Lose!!!");
 
         }
-        if (PlayerEntity.playerAttributes.get("xp")>=PlayerEntity.playerAttributes.get("level")*20+30){
-            PlayerEntity.playerAttributes.replace("level", PlayerEntity.playerAttributes.get("level")+1);
+        if (PlayerEntity.playerAttributes.get("xp")>=PlayerEntity.playerAttributes.get("level")*20+30) {
+            PlayerEntity.playerAttributes.replace("level", PlayerEntity.playerAttributes.get("level") + 1);
             PlayerEntity.playerAttributes.replace("xp", PlayerEntity.playerAttributes.get("xp") - (
-                    PlayerEntity.playerAttributes.get("level")*20+30));
+                    PlayerEntity.playerAttributes.get("level") * 20 + 30));
             System.out.println("You leveled up!!!  Enter 'A' to upgrade health, and enter 'B' to upgrade attack!");
 
-            boolean choiceValid = true;
-            do {
-                char choice = Character.toUpperCase(scanner.next().charAt(0));
-                switch (choice) {
-                    case 'A' -> {
-                        PlayerEntity.playerAttributes.replace("baseHealth",
-                                PlayerEntity.playerAttributes.get("baseHealth")+3);
-                        choiceValid = true;
-                    }
-                    case 'B' -> {
-                        PlayerEntity.playerAttributes.replace("baseAttack",
-                                PlayerEntity.playerAttributes.get("baseAttack")+1);
-                        choiceValid = true;
-                    }
-                    default -> {
-                        System.out.println("Invalid Response");
-                        choiceValid = false;
-                    }
-                }
-            } while (!choiceValid);
+            char choice = Util.readValidInput(scanner, "AB");
+            switch (choice) {
+                case 'A' -> PlayerEntity.playerAttributes.replace("baseHealth",
+                        PlayerEntity.playerAttributes.get("baseHealth") + 3);
+                case 'B' -> PlayerEntity.playerAttributes.replace("baseAttack",
+                        PlayerEntity.playerAttributes.get("baseAttack") + 1);
+            }
         }
     }
 }
