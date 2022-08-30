@@ -6,16 +6,20 @@ import net.breamkillerx.textrpg.entity.control.inventory.Inventory;
 import net.breamkillerx.textrpg.entity.control.inventory.ItemType;
 import net.breamkillerx.textrpg.exception.IllegalCombatStateException;
 import net.breamkillerx.textrpg.exception.InvalidGenerationException;
+import net.breamkillerx.textrpg.util.Util;
 import net.breamkillerx.textrpg.world.World;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
 public class Combat{
     Scanner scanner = new Scanner(System.in);
     Enemy currEnemy = new Enemy();
+
+    Random random = new Random();
 
     public void VictorLoot(){
         double loot =Math.random()*100;
@@ -67,23 +71,25 @@ public class Combat{
             } else {
                 throw new InvalidGenerationException("Invalid enemy generated!");
             }
+
         do {
-            System.out.println(""
-                + "Your health (" + PlayerEntity.playerAttributes.get("currHealth") + ")\t\t\t" + currEnemy.Enemy
-                + "'s health (" + currEnemy.health + ")\n"
-                + "What do you do?\n"
-                + "A - Attack         \t\t\tB - Power Up\n"
-                + "C - Weaken opponent\t\t\tD - Use an Item");
-            boolean choiceValid = true;
+            boolean repeat;
             do {
-                char choice = Character.toUpperCase(scanner.next().charAt(0));
+                repeat = false;
+                System.out.println(""
+                        + "Your health (" + PlayerEntity.playerAttributes.get("currHealth") + ")\t\t\t" + currEnemy.Enemy
+                        + "'s health (" + currEnemy.health + ")\n"
+                        + "What do you do?\n"
+                        + "A - Attack         \t\t\tB - Power Up\n"
+                        + "C - Weaken opponent\t\t\tD - Use an Item");
+
+                char choice = Util.readValidInput(scanner, "ABCD");
                 switch (choice) {
                     case 'A':
                         currEnemy.health -= PlayerEntity.playerAttributes.get("currAttack");
-                        System.out.println("You hurt "+currEnemy.Enemy+" for " +
+                        System.out.println("You hurt " + currEnemy.Enemy + " for " +
                                 PlayerEntity.playerAttributes.get("currAttack") + " damage!");
                         System.out.println("\n");
-                        choiceValid = true;
                         break;
                     case 'B':
                         PlayerEntity.playerAttributes.replace(
@@ -92,52 +98,43 @@ public class Combat{
                         System.out.println("You gained " + PlayerEntity.playerAttributes.get("level") +
                                 " attack damage!  Your current attack stat is " +
                                 PlayerEntity.playerAttributes.get("currAttack") + "\n");
-                        choiceValid = true;
                         break;
                     case 'C':
-                        if(currEnemy.attack>=1){
-                            currEnemy.attack-=PlayerEntity.playerAttributes.get("level");
-                        } else if(currEnemy.attack==-1){
+                        if (currEnemy.attack >= 1) {
+                            currEnemy.attack -= PlayerEntity.playerAttributes.get("level");
+                        } else if (currEnemy.attack == -1) {
                             currEnemy.attack = 0;
                         }
-                        System.out.println(currEnemy.Enemy+" lost " + PlayerEntity.playerAttributes.get("level")
+                        System.out.println(currEnemy.Enemy + " lost " + PlayerEntity.playerAttributes.get("level")
                                 + " attack damage!  Their attack stat is " +
                                 currEnemy.attack + "\n");
-                        choiceValid = true;
                         break;
                     case 'D':
-                        if (PlayerEntity.inventory.getAmount(ItemType.POTION)>=1) {
+                        if (PlayerEntity.inventory.getAmount(ItemType.POTION) >= 1) {
                             System.out.println("You have " + PlayerEntity.playerAttributes.get("potions") + " potions!"
                                     + "  One potion heals you to max health, enter 'A' to use, enter 'B' to cancel.");
-                            char potionCheck = scanner.next().charAt(0);
+                            char potionCheck = Util.readValidInput(scanner, "AB");
                             switch (potionCheck) {
                                 case 'A' -> {
                                     PlayerEntity.playerAttributes.replace("currHealth",
                                             PlayerEntity.playerAttributes.get("baseHealth"));
                                     PlayerEntity.inventory.addItemsSafe(ItemType.POTION, -1);
-                                    choiceValid = true;
                                 }
                                 case 'B' -> {
-                                    choiceValid = false;
-                                    System.out.println("Your health (" + PlayerEntity.playerAttributes.get("currHealth")
-                                            + ")" + currEnemy.Enemy + "'s health (" + currEnemy.health + ")");
-                                    System.out.println("""
-                                            What do you do?
-                                            A - Attack\t\t\tB - Power Up
-                                            C - Weaken opponent\t\t\tD - Use an Item""");
+                                    System.out.println("canceled!");
+                                    repeat = true;
                                 }
-                                default -> System.out.println("Invalid Input!");
                             }
                         } else {
                             System.out.println("You do not have any items!");
-                            choiceValid = true;
+                            repeat = true;
                         }
 
                         break;
-                    default:
-                        System.out.println("Invalid Input!\n");
                 }
-            } while(!choiceValid);
+            }
+            while (repeat);
+
             int choice = (int) (Math.random() * 2.1);
             switch (choice) {
                 case 0 -> {
@@ -219,5 +216,4 @@ public class Combat{
             } while (!choiceValid);
         }
     }
-
 }

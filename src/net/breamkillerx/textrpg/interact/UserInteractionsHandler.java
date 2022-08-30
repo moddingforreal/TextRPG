@@ -1,5 +1,6 @@
 package net.breamkillerx.textrpg.interact;
 
+import net.breamkillerx.textrpg.util.Util;
 import net.breamkillerx.textrpg.worldinteract.Combat;
 import net.breamkillerx.textrpg.entity.control.PlayerEntity;
 import net.breamkillerx.textrpg.world.World;
@@ -19,30 +20,13 @@ public class UserInteractionsHandler {
                 + "Enter 'A' to battle an enemy!\n"
                 + "Enter 'B' to go to the item shop!\n"
                 + "Enter 'C' to go to your stats!");
-        boolean inputValid = true;
-        char response;
         Scanner scanner = new Scanner(System.in);
-        do {
-            response = Character.toUpperCase(scanner.next().charAt(0));
-            switch (response) {
-                case 'A':
-                    combat.battle();
-                    inputValid=true;
-                    break;
-                case 'B':
-                    shop.shop();
-                    inputValid=true;
-                    break;
-                case 'C':
-                    stats();
-                    inputValid=true;
-                    break;
-                default:
-                    System.out.println("Invalid Input, you put " + response + " you need to put 'A', 'B', or 'C'.");
-                    inputValid=false;
-                    break;
-            }
-        } while (!inputValid);
+        char response = Util.readValidInput(scanner, "ABC");
+        switch (response) {
+            case 'A' -> combat.battle();
+            case 'B' -> shop.shop();
+            case 'C' -> stats();
+        }
 
     }
     public void stats(){
