@@ -23,6 +23,7 @@ public class UserInteractionsHandler {
     Shop shop = new Shop(scanner, player);
     public void lobby(){
         System.out.println("""
+                
                 Welcome back to base camp!
                 What would you like to do?
                 Enter 'A' to battle an enemy!

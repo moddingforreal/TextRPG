@@ -81,6 +81,27 @@ public class Inventory {
         update();
         return ret;
     }
+
+    // Adds and removes items
+    public int addItems(ItemType type, int amount) {
+        int amountAdded = 0;
+        // insert items into existing stacks or remove from existing stacks
+        for (Stack stack : this.contents) {
+            if (stack.item.isOf(type)) {
+                amountAdded += stack.add(amount - amountAdded);
+                if (amount - amountAdded == 0)
+                   break;
+            }
+        }
+        // create new stacks if filling existing stacks didn't satisfy the amount
+        while (amount - amountAdded > 0 && this.contents.size() < this.maxStacks) {
+            int newStackAmount = Math.min(amount - amountAdded, this.maxStackSize);
+            this.contents.add(new Stack(this.maxStackSize, Item.of(type), newStackAmount));
+            amountAdded += newStackAmount;
+        }
+        this.update();
+        return amountAdded;
+    }
     public boolean addStack(Stack stack) {
         if (!(contents.size() == maxStacks)) {
             contents.add(stack);

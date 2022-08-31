@@ -48,33 +48,31 @@ public class Combat{
         }
         playerEntity.playerAttributes = player;
     }
-    public void battle(){
-        double enemyGen=Math.random()*100.0;
-        Enemy currEnemy;
+    public void battle() {
+        double enemyGen = Math.random() * 100.0;
+        String enemyName;
+        if (enemyGen < 30)
+            enemyName = "Slime";
+        else if (enemyGen < 55)
+            enemyName = "Zombie";
+        else if (enemyGen < 70)
+            enemyName = "Skeleton";
+        else if (enemyGen < 80)
+            enemyName = "Ogre";
+        else if (enemyGen < 86)
+            enemyName = "Viper";
+        else if (enemyGen < 91)
+            enemyName = "Undead Warrior";
+        else if (enemyGen < 94)
+            enemyName = "Litch";
+        else if (enemyGen < 97)
+            enemyName = "Hydra";
+        else if (enemyGen < 99)
+            enemyName = "Golem";
+        else
+            enemyName = "Dragon";
         int level = playerEntity.playerAttributes.get("level");
-            if(enemyGen>=91.0 && enemyGen<=100.0) {
-                currEnemy = new Enemy("Ogre", level);
-            } else if(enemyGen>=18.0 && enemyGen<=50.0) {
-                currEnemy = new Enemy("Slime", level);
-            } else if(enemyGen>=76.0 && enemyGen<=90.0) {
-                currEnemy = new Enemy("Skeleton", level);
-            } else if(enemyGen>=51.0 && enemyGen<=75.0) {
-                currEnemy = new Enemy("Zombie", level);
-            } else if(enemyGen>=10.0 && enemyGen<=12.0) {
-                currEnemy = new Enemy("Litch", level);
-            } else if(enemyGen==15.0) {
-                currEnemy = new Enemy("Dragon", level);
-            } else if(enemyGen>=6.0 && enemyGen<=9.0) {
-                currEnemy = new Enemy("Undead Warrior", level);
-            } else if(enemyGen>=0.0 && enemyGen<=5.0) {
-                currEnemy = new Enemy("Viper", level);
-            } else if(enemyGen == 16.0 || enemyGen == 17.0) {
-                currEnemy = new Enemy("Hydra",level);
-            } else if(enemyGen == 13.0 || enemyGen == 14.0) {
-                currEnemy = new Enemy("Golem", level);
-            } else {
-                throw new InvalidGenerationException("Invalid enemy generated!");
-            }
+        Enemy currEnemy = new Enemy(enemyName, level);
 
         do {
             boolean repeat;
@@ -142,7 +140,7 @@ public class Combat{
             switch (choice) {
                 case 0 -> {
                     playerEntity.playerAttributes.replace("currHealth",
-                            playerEntity.playerAttributes.get("currHealth")-currEnemy.attack);
+                            playerEntity.playerAttributes.get("currHealth") - currEnemy.attack);
                     System.out.println("You got hurt for " + currEnemy.attack + " damage!\n");
                 }
                 case 1 -> {
@@ -153,7 +151,7 @@ public class Combat{
                 case 2 -> {
                     if (playerEntity.playerAttributes.get("currAttack") >= 1) {
                         playerEntity.playerAttributes.replace("currAttack",
-                                playerEntity.playerAttributes.get("currAttack")-1);
+                                playerEntity.playerAttributes.get("currAttack") - 1);
                     } else {
                         playerEntity.playerAttributes.replace("currAttack", 0);
                     }
@@ -163,18 +161,18 @@ public class Combat{
                 default -> throw new IllegalCombatStateException("Switch-case failed... somehow... anyways, error!");
             }
 
-            if (currEnemy.health<=0){
-                playerEntity.isAlive=false;
-            } else playerEntity.isAlive= playerEntity.playerAttributes.get("currHealth") <= 0;
+            if (currEnemy.health <= 0) {
+                playerEntity.isAlive = false;
+            } else playerEntity.isAlive = playerEntity.playerAttributes.get("currHealth") <= 0;
         } while (playerEntity.isAlive);
-        if (currEnemy.health<=0){
-            playerEntity.playerAttributes.replace("xp", playerEntity.playerAttributes.get("xp")+30);
+        if (currEnemy.health <= 0) {
+            playerEntity.playerAttributes.replace("xp", playerEntity.playerAttributes.get("xp") + 30);
             System.out.println("You Win and gain 30 experience!!!  You need " +
-                    ((playerEntity.playerAttributes.get("level")*20+30)-(playerEntity.playerAttributes.get("xp"))) +
+                    ((playerEntity.playerAttributes.get("level") * 20 + 30) - (playerEntity.playerAttributes.get("xp"))) +
                     " more experience to level up!");
             VictorLoot(currEnemy);
             Map<String, Integer> playerKills = World.playerKills;
-            Consumer<String> updateKills = s -> playerKills.replace(s, playerKills.get(s)+1);
+            Consumer<String> updateKills = s -> playerKills.replace(s, playerKills.get(s) + 1);
             switch (currEnemy.enemyId) {
                 case 1 -> updateKills.accept("killsSlime");
                 case 2 -> updateKills.accept("killsZombie");
@@ -191,7 +189,7 @@ public class Combat{
             System.out.println("You Lose!!!");
 
         }
-        if (playerEntity.playerAttributes.get("xp")>=playerEntity.playerAttributes.get("level")*20+30) {
+        if (playerEntity.playerAttributes.get("xp") >= playerEntity.playerAttributes.get("level") * 20 + 30) {
             playerEntity.playerAttributes.replace("level", playerEntity.playerAttributes.get("level") + 1);
             playerEntity.playerAttributes.replace("xp", playerEntity.playerAttributes.get("xp") - (
                     playerEntity.playerAttributes.get("level") * 20 + 30));

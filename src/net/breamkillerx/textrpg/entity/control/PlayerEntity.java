@@ -9,10 +9,10 @@ import java.util.Map;
 
 public class PlayerEntity extends ControllableEntity {
     public HashMap<String, Integer> playerAttributes;
-    public boolean isAlive = true;
     public PlayerEntity() {
         initAttributes();
     }
+
     @SafeVarargs
     public PlayerEntity(Map.Entry<String, Integer>... entries) {
         this();
@@ -20,6 +20,7 @@ public class PlayerEntity extends ControllableEntity {
             playerAttributes.put(entry.getKey(), entry.getValue());
         }
     }
+
     private void initAttributes() {
         playerAttributes = new HashMap<>();
         playerAttributes.put("xp", 0);
@@ -31,6 +32,7 @@ public class PlayerEntity extends ControllableEntity {
         playerAttributes.put("currHealth", 10);
         playerAttributes.put("currAttack", 10);
     }
+
     public void onRespawn() {
         isAlive = true;
         playerAttributes.put("xp", 0);

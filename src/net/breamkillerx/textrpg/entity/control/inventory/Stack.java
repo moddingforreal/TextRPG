@@ -1,7 +1,12 @@
 package net.breamkillerx.textrpg.entity.control.inventory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import net.breamkillerx.textrpg.util.Util;
+
 public class Stack {
     public final int maxAmountHeld;
+    public Item item;
+    public int itemAmountHeld;
 
     public Stack() {
         this(0);
@@ -22,6 +27,14 @@ public class Stack {
         this.itemAmountHeld = itemAmountContained;
     }
 
-    public Item item;
-    public int itemAmountHeld;
+    public int add(int amount) {
+        int amountToAdd = Util.clamp(-itemAmountHeld, amount, this.maxAmountHeld - this.itemAmountHeld);
+        this.itemAmountHeld += amountToAdd;
+        return amountToAdd;
+    }
+
+    @JsonIgnore
+    public boolean isEmpty() {
+        return itemAmountHeld == 0;
+    }
 }
