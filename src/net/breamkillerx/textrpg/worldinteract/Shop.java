@@ -7,9 +7,11 @@ import net.breamkillerx.textrpg.util.Util;
 import java.util.Scanner;
 
 public class Shop {
-    public Scanner scanner;
-    public Shop(Scanner scanner) {
+    Scanner scanner;
+    PlayerEntity playerEntity;
+    public Shop(Scanner scanner, PlayerEntity playerIn) {
         this.scanner = scanner;
+        playerEntity = playerIn;
     }
     public void shop() {
         boolean exitshop = false;
@@ -24,33 +26,33 @@ public class Shop {
             char shopChoice = Util.readValidInput(scanner, "ABCD");
             switch (shopChoice) {
                 case 'A' -> {
-                    if (PlayerEntity.inventory.getAmount(ItemType.GOLD) >= 3) {
-                        PlayerEntity.inventory.addItem(ItemType.POTION);
-                        PlayerEntity.inventory.addItemsSafe(ItemType.GOLD, -3);
+                    if (playerEntity.inventory.getAmount(ItemType.GOLD) >= 3) {
+                        playerEntity.inventory.addItem(ItemType.POTION);
+                        playerEntity.inventory.addItemsSafe(ItemType.GOLD, -3);
                         System.out.println("You bought a potion!  You now have " +
-                                PlayerEntity.inventory.getAmount(ItemType.GOLD) + " gold left!");
+                                playerEntity.inventory.getAmount(ItemType.GOLD) + " gold left!");
                     } else {
                         System.out.println("You do not have enough gold!");
                     }
                 }
                 case 'B' -> {
-                    if (PlayerEntity.inventory.getAmount(ItemType.GOLD) >= 5) {
-                        PlayerEntity.playerAttributes.replace("baseAttack", PlayerEntity.playerAttributes.get("baseAttack") + 1);
-                        PlayerEntity.inventory.addItemsSafe(ItemType.GOLD, -5);
+                    if (playerEntity.inventory.getAmount(ItemType.GOLD) >= 5) {
+                        playerEntity.playerAttributes.replace("baseAttack", playerEntity.playerAttributes.get("baseAttack") + 1);
+                        playerEntity.inventory.addItemsSafe(ItemType.GOLD, -5);
                         System.out.println("You bought an Attack Upgrade! Your attack is now " +
-                                PlayerEntity.playerAttributes.get("baseAttack") + ". You have " +
-                                PlayerEntity.inventory.getAmount(ItemType.GOLD) + " gold left!");
+                                playerEntity.playerAttributes.get("baseAttack") + ". You have " +
+                                playerEntity.inventory.getAmount(ItemType.GOLD) + " gold left!");
                     } else {
                         System.out.println("You do not have enough gold!");
                     }
                 }
                 case 'C' -> {
-                    if (PlayerEntity.inventory.getAmount(ItemType.GOLD) >= 5) {
-                        PlayerEntity.playerAttributes.replace("baseHealth", PlayerEntity.playerAttributes.get("baseHealth") + 3);
-                        PlayerEntity.inventory.addItemsSafe(ItemType.GOLD, -5);
+                    if (playerEntity.inventory.getAmount(ItemType.GOLD) >= 5) {
+                        playerEntity.playerAttributes.replace("baseHealth", playerEntity.playerAttributes.get("baseHealth") + 3);
+                        playerEntity.inventory.addItemsSafe(ItemType.GOLD, -5);
                         System.out.println("You bought a health upgrade!  Your max health is " +
-                                PlayerEntity.playerAttributes.get("baseHealth") + ". You have " +
-                                PlayerEntity.inventory.getAmount(ItemType.GOLD) + " gold left!");
+                                playerEntity.playerAttributes.get("baseHealth") + ". You have " +
+                                playerEntity.inventory.getAmount(ItemType.GOLD) + " gold left!");
                     } else {
                         System.out.println("You do not have enough gold!");
                     }

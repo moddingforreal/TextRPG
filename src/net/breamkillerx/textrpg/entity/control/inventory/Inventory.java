@@ -6,13 +6,17 @@ import java.util.ArrayList;
 import java.util.stream.IntStream;
 
 public class Inventory {
-    private ArrayList<Stack> contents;
+    private final ArrayList<Stack> contents;
     public int maxStackSize;
     public int maxStacks;
     public Inventory(int maxStackSize, int maxStacks) {
-        contents = new ArrayList<Stack>(maxStacks);
+        contents = new ArrayList<>(maxStacks);
         this.maxStacks = maxStacks;
         this.maxStackSize = maxStackSize;
+    }
+
+    public Inventory() {
+        this(0, 0);
     }
     public boolean addItem(ItemType type) {
         for (Stack content : contents) {
@@ -79,7 +83,7 @@ public class Inventory {
     }
     public boolean addStack(Stack stack) {
         if (!(contents.size() == maxStacks)) {
-            contents.set(contents.size() + 1, stack);
+            contents.add(stack);
             return true;
         }
         return false;

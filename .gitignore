@@ -10,8 +10,9 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
-# gradle
+# project
 .gradle
+saveData.json
 
 # Package Files #
 *.jar

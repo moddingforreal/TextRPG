@@ -25,82 +25,80 @@ public class Enemy extends Entity {
         this.lootMultiplier=lootMultiplier;
         this.type = type;
     }
-    public Enemy(String Enemy) {
-        int level = PlayerEntity.playerAttributes.get("level");
+    public Enemy(String Enemy, int level) {
         this.Enemy = Enemy;
         switch (Enemy) {
-            default:
-                throw new InvalidEntityIdException("Invalid enemy name passed to enemy constructor!");
-            case "Ogre":
+            default -> throw new InvalidEntityIdException("Invalid enemy name passed to enemy constructor!");
+            case "Ogre" -> {
                 enemyId = 4;
                 health = level * 3 + 4;
-                attack = level *2 +1;
+                attack = level * 2 + 1;
                 lootMultiplier = 2;
                 type = EnemyType.OGRE;
-                break;
-            case "Slime":
+            }
+            case "Slime" -> {
                 enemyId = 1;
-                health = level +3;
+                health = level + 3;
                 attack = level;
                 lootMultiplier = 1;
                 type = EnemyType.SLIME;
-                break;
-            case "Skeleton":
+            }
+            case "Skeleton" -> {
                 enemyId = 3;
                 health = level * 2 + 6;
-                attack = level *2;
+                attack = level * 2;
                 lootMultiplier = 1;
                 type = EnemyType.SKELETON;
-                break;
-            case "Zombie":
+            }
+            case "Zombie" -> {
                 enemyId = 2;
                 health = level * 2 + 5;
-                attack = level +1;
+                attack = level + 1;
                 lootMultiplier = 1;
                 type = EnemyType.ZOMBIE;
-                break;
-            case "Litch":
+            }
+            case "Litch" -> {
                 enemyId = 7;
                 health = level * 4 + 5;
-                attack = level *2 +7;
+                attack = level * 2 + 7;
                 lootMultiplier = 3;
                 type = EnemyType.LITCH;
-                break;
-            case "Dragon":
+            }
+            case "Dragon" -> {
                 enemyId = 10;
-                health = level *15;
-                attack = level *10;
+                health = level * 15;
+                attack = level * 10;
                 lootMultiplier = 6;
                 type = EnemyType.DRAGON;
-                break;
-            case "Undead Warrior":
+            }
+            case "Undead Warrior" -> {
                 enemyId = 6;
-                health = level *4 +3;
-                attack = level *2 +5;
+                health = level * 4 + 3;
+                attack = level * 2 + 5;
                 lootMultiplier = 3;
                 type = EnemyType.UNDEAD_WARRIOR;
-                break;
-            case "Viper":
+            }
+            case "Viper" -> {
                 enemyId = 5;
-                health = level *3 +7;
-                attack = level *2 +3;
+                health = level * 3 + 7;
+                attack = level * 2 + 3;
                 lootMultiplier = 2;
                 type = EnemyType.VIPER;
-                break;
-            case "Hydra":
+            }
+            case "Hydra" -> {
                 enemyId = 9;
-                health = level *3 + 7;
-                attack = level *3 +6;
+                health = level * 3 + 7;
+                attack = level * 3 + 6;
                 lootMultiplier = 4;
                 type = EnemyType.HYDRA;
-                break;
-            case "Golem":
+            }
+            case "Golem" -> {
                 enemyId = 8;
-                health = level *6 + 6;
-                attack = level *3 +4;
+                health = level * 6 + 6;
+                attack = level * 3 + 4;
                 lootMultiplier = 4;
                 type = EnemyType.GOLEM;
-                break;
+            }
         }
     }
     public Enemy() {}
