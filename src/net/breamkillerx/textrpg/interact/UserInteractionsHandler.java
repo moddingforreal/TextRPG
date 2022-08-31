@@ -60,7 +60,7 @@ public class UserInteractionsHandler {
             var saveData = Files.readString(Path.of("saveData.json"));
             return mapper.readValue(saveData, PlayerEntity.class);
         }catch (Exception e){
-            System.out.println("Savedata not found or invalid, new save will be generated!");
+            System.out.println("Save data not found or invalid, new save will be generated!");
         }
         return new PlayerEntity();
     }
