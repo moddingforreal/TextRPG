@@ -2,19 +2,23 @@ package net.breamkillerx.textrpg.interact;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import net.breamkillerx.textrpg.entity.control.inventory.ItemType;
 import net.breamkillerx.textrpg.util.Util;
 import net.breamkillerx.textrpg.worldinteract.Combat;
 import net.breamkillerx.textrpg.entity.control.PlayerEntity;
 import net.breamkillerx.textrpg.world.World;
 import net.breamkillerx.textrpg.worldinteract.Shop;
 
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.Scanner;
 
 public class UserInteractionsHandler {
     Scanner scanner = new Scanner(System.in);
-    PlayerEntity player = new PlayerEntity();
+    PlayerEntity player = loadPlayer();
     Combat combat = new Combat(scanner, player);
     Shop shop = new Shop(scanner, player);
     public void lobby(){
@@ -31,7 +35,7 @@ public class UserInteractionsHandler {
             case 'B' -> shop.shop();
             case 'C' -> stats();
         }
-
+        save();
     }
     public void stats(){
         Map<String, Integer> entries = player.playerAttributes;
@@ -40,7 +44,7 @@ public class UserInteractionsHandler {
             + "You need " + (((entries.get("level")*20)+30)-entries.get("xp")) + " more experience to level up!\n"
             + "Your Health is " + entries.get("baseHealth") + ".\n"
             + "Your Attack is " + entries.get("baseAttack") + ".\n"
-            + "You have " + entries.get("gold") + " gold!\n"
+            + "You have " + player.inventory.getAmount(ItemType.GOLD) + " gold!\n"
             + "Press 'A' to go to the beastiary, press any other key to continue.");
         char choice = Character.toUpperCase(scanner.next().charAt(0));
         if (choice =='A'){
@@ -50,11 +54,22 @@ public class UserInteractionsHandler {
         }
     }
 
+    private static PlayerEntity loadPlayer(){
+        JsonMapper mapper = new JsonMapper();
+        try {
+            var saveData = Files.readString(Path.of("saveData.json"));
+            return mapper.readValue(saveData, PlayerEntity.class);
+        }catch (Exception e){
+            System.err.println("Savedata not found or invalid, new save will be generated");
+        }
+        return new PlayerEntity();
+    }
+
     public void save() {
         JsonMapper mapper = new JsonMapper();
-        try (FileWriter writer = new FileWriter("saveData.json")) {
+        try {
             var saveData = mapper.writeValueAsString(player);
-            writer.write(saveData);
+            Files.writeString(Path.of("saveData.json"), saveData);
         } catch (Exception e) {
             System.err.println("An Error occured whilst saving Data");
             e.printStackTrace();

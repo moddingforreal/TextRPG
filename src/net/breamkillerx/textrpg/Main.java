@@ -14,7 +14,6 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         UserInteractionsHandler uihandler = new UserInteractionsHandler();
-        uihandler.save();
 
         while (!World.quit) {
             System.out.println("Welcome to TextRPG!");

@@ -103,9 +103,12 @@ public class Inventory {
     }
     public int update() {
         int removedCount = 0;
-        for (int i = 0; i < maxStacks; i++) {
-            if (contents.get(i).itemAmountHeld == 0) contents.remove(i);
-            removedCount++;
+        for (int i = 0; i < contents.size(); i++) {
+            if (contents.get(i).itemAmountHeld == 0) {
+                contents.remove(i);
+                i--;
+                removedCount++;
+            }
         }
         return removedCount;
     }
