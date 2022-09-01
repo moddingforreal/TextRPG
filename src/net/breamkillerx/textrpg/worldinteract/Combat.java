@@ -57,16 +57,18 @@ public class Combat{
             enemyType = EnemyType.GOLEM;
         else
             enemyType = EnemyType.DRAGON;
-        int level = playerEntity.playerAttributes.get("level");
+        int level = playerEntity.getAttribute("level");
         Enemy currEnemy = new Enemy(enemyType, level);
+
+        playerEntity.putAttribute("currAttack", playerEntity.getAttribute("baseAttack"));
 
         do {
             boolean repeat;
             do {
                 repeat = false;
                 System.out.println(""
-                        + "Your health (" + playerEntity.playerAttributes.get("currHealth") + ")\t\t\t" + currEnemy.getName()
-                        + "'s health (" + currEnemy.health + ")\n"
+                        + "Your health (" + playerEntity.getHealth() + ")\t\t\t" + currEnemy.getName()
+                        + "'s health (" + currEnemy.getHealth() + ")\n"
                         + "What do you do?\n"
                         + "A - Attack         \t\t\tB - Power Up\n"
                         + "C - Weaken opponent\t\t\tD - Use an Item");
@@ -74,21 +76,20 @@ public class Combat{
                 char choice = Util.readValidInput(scanner, "ABCD");
                 switch (choice) {
                     case 'A':
-                        int enemyHealth = currEnemy.health;
-                        currEnemy.health = Math.min(enemyHealth - playerEntity.getAttribute("currAttack"), 0);
-                        System.out.println("You hurt " + currEnemy.getName() + " for " +
-                                (enemyHealth - currEnemy.health) + " damage!\n");
+                        int currAttack = playerEntity.getAttribute("currAttack");
+                        currEnemy.attackFor(currAttack);
+                        System.out.println("You hurt " + currEnemy.getName() + " for " + currAttack + " damage!\n");
                         break;
                     case 'B':
-                        int currAttack = playerEntity.updateAttribute("currAttack", _currAttack -> _currAttack + level);
-                        System.out.println("You gained " + level + " attack damage!  Your current attack stat is " + currAttack + "\n");
+                        int newAttack = playerEntity.updateAttribute("currAttack", _currAttack -> _currAttack + level);
+                        System.out.println("You gained " + level + " attack damage!  Your current attack stat is " + newAttack + "\n");
                         break;
                     case 'C':
                         if (currEnemy.attack > 0) {
                             int enemyAttack = currEnemy.attack;
-                            currEnemy.attack = Math.min(enemyAttack - level, 0);
-                            System.out.println(currEnemy.getName() + " lost " + (enemyAttack - currEnemy.attack)
-                                    + " attack damage!  Their attack stat is " + currEnemy.attack + "\n");
+                            currEnemy.attack = Math.max(enemyAttack - level, 0);
+                            System.out.println(currEnemy.getName() + " lost " + (enemyAttack - currEnemy.getAttack())
+                                    + " attack damage!  Their attack stat is " + currEnemy.getAttack() + "\n");
                         }
                         break;
                     case 'D':
@@ -99,7 +100,7 @@ public class Combat{
                             char potionCheck = Util.readValidInput(scanner, "AB");
                             switch (potionCheck) {
                                 case 'A' -> {
-                                    playerEntity.putStat("currHealth", playerEntity.getAttribute("baseHealth"));
+                                    playerEntity.setHealth(playerEntity.getAttribute("baseHealth"));
                                     playerEntity.inventory.addItems(ItemType.POTION, -1);
                                 }
                                 case 'B' -> {
@@ -119,18 +120,18 @@ public class Combat{
             int choice = (int) (Math.random() * 2.1);
             switch (choice) {
                 case 0 -> {
-                    playerEntity.updateAttribute("currHealth", health -> health - currEnemy.attack);
-                    System.out.println("You got hurt for " + currEnemy.attack + " damage!\n");
+                    playerEntity.attackFor(currEnemy.getAttack());
+                    System.out.println("You got hurt for " + currEnemy.getAttack() + " damage!\n");
                 }
                 case 1 -> {
                     currEnemy.attack += level;
                     System.out.println(currEnemy.getName() + " gained " + level +
-                            " attack damage!  Their current attack stat is " + currEnemy.attack + "\n");
+                            " attack damage!  Their current attack stat is " + currEnemy.getAttack() + "\n");
                 }
                 case 2 -> {
                     int currAttack = playerEntity.getAttribute("currAttack");
                     if(currAttack > 0) {
-                        int newAttack = Math.min(currAttack - level, 0);
+                        int newAttack = Math.max(currAttack - level, 0);
                         playerEntity.putAttribute("currAttack", newAttack);
                         System.out.println("You lost " + (currAttack - newAttack) + " attack damage!" +
                                 "  Your attack stat is " + newAttack + "\n");
@@ -138,10 +139,9 @@ public class Combat{
                 }
                 default -> throw new IllegalCombatStateException("Switch-case failed... somehow... anyways, error!");
             }
-            playerEntity.isAlive = playerEntity.getAttribute("currHealth") <= 0;
-        } while (playerEntity.isAlive && currEnemy.isAlive());
+        } while (playerEntity.isAlive() && currEnemy.isAlive());
 
-        if (currEnemy.health <= 0) {
+        if (!currEnemy.isAlive()) {
             int xp = playerEntity.updateAttribute("xp", _xp -> _xp + 30);
             System.out.println("You Win and gain 30 experience!!!  You need " +
                     (level * 20 + 30 - xp) + " more experience to level up!");

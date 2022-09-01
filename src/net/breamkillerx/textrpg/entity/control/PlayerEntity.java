@@ -1,11 +1,15 @@
 package net.breamkillerx.textrpg.entity.control;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
 public class PlayerEntity extends ControllableEntity {
-    public HashMap<String, Integer> playerAttributes;
+    @JsonProperty
+    private HashMap<String, Integer> playerAttributes;
+    @JsonProperty
     private final Map<String, Integer> statistics = new HashMap<>();
     public PlayerEntity() {
         initAttributes();
@@ -25,8 +29,6 @@ public class PlayerEntity extends ControllableEntity {
         playerAttributes.put("level", 1);
         playerAttributes.put("baseHealth", 10);
         playerAttributes.put("baseAttack", 10);
-        // playerAttributes.put("gold", 0);
-        // playerAttributes.put("potions", 0);
         playerAttributes.put("currHealth", 10);
         playerAttributes.put("currAttack", 10);
     }
@@ -67,18 +69,5 @@ public class PlayerEntity extends ControllableEntity {
     public void respawn() {
         super.respawn();
         initAttributes();
-        inventory.clear();
-    }
-
-    public void onRespawn() {
-        isAlive = true;
-        playerAttributes.put("xp", 0);
-        playerAttributes.put("level", 1);
-        playerAttributes.put("baseHealth", 10);
-        playerAttributes.put("baseAttack", 10);
-        // playerAttributes.put("gold", 0);
-        // playerAttributes.put("potions", 0);
-        playerAttributes.put("currHealth", 10);
-        playerAttributes.put("currAttack", 10);
     }
 }

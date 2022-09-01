@@ -28,13 +28,15 @@ public class UserInteractionsHandler {
                 What would you like to do?
                 Enter 'A' to battle an enemy!
                 Enter 'B' to go to the item shop!
-                Enter 'C' to go to your stats!""");
+                Enter 'C' to go to your stats!
+                Enter 'Q' to quit!""");
         Scanner scanner = new Scanner(System.in);
-        char response = Util.readValidInput(scanner, "ABC");
+        char response = Util.readValidInput(scanner, "ABCQ");
         switch (response) {
             case 'A' -> combat.battle();
             case 'B' -> shop.shop();
             case 'C' -> stats();
+            case 'Q' -> World.quit = true;
         }
         save();
     }
@@ -57,7 +59,7 @@ public class UserInteractionsHandler {
         try {
             var saveData = Files.readString(Path.of("saveData.json"));
             return mapper.readValue(saveData, PlayerEntity.class);
-        }catch (Exception e){
+        }catch (Exception e) {
             System.out.println("Savedata not found or invalid, new save will be generated!");
         }
         return new PlayerEntity();

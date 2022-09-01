@@ -18,69 +18,6 @@ public class Inventory {
     public Inventory() {
         this(0, 0);
     }
-    public boolean addItem(ItemType type) {
-        for (Stack content : contents) {
-            if (content.item.type() == type) {
-                if (content.itemAmountHeld + 1 <= content.maxAmountHeld) {
-                    content.itemAmountHeld++;
-                    update();
-                    return true;
-                }
-            }
-        }
-        if (!(contents.size() == maxStacks)) {
-            addStack(new Stack(maxStackSize, new Item(type), 1));
-            update();
-            return true;
-        }
-        update();
-        return false;
-    }
-    // Negative values REMOVE that amount of items. Beware, buggy; Might behave unexpectedly
-    public boolean addItem(ItemType type, int amount) {
-        for (Stack content : contents) {
-            if (content.item.type() == type) {
-                if (content.itemAmountHeld + amount <= content.maxAmountHeld) {
-                    content.itemAmountHeld += amount;
-                    update();
-                    return true;
-                } else if (Math.ceil((double)amount/(double)maxStackSize) < maxStacks-contents.size()) {
-                    int newstacks = (int)Math.ceil(((int)((double)amount/(double)maxStackSize)));
-                    IntStream.rangeClosed(0, (newstacks+1)).forEach(x ->
-                    {if (!(addStack(new Stack(maxStackSize, new Item(type), maxStackSize))))
-                        throw new IllegalInventoryStateException("Stack overflow!");});
-
-                }
-            }
-        }
-        if (!(contents.size() == maxStacks)) {
-            addStack(new Stack(maxStackSize, new Item(type), 1));
-            update();
-            return true;
-        }
-        update();
-        return false;
-    }
-    // Adds and REMOVES items. This time safely but inefficiently.
-    public boolean addItemsSafe(ItemType type, int amount) {
-        boolean ret = true;
-        for (int i = 0; i < amount; i++) {
-            for (Stack content : contents) {
-                if (content.item.type() == type) {
-                    if (content.itemAmountHeld + 1 <= content.maxAmountHeld) {
-                        content.itemAmountHeld++;
-                    }
-                }
-            }
-            if (!(contents.size() == maxStacks)) {
-                addStack(new Stack(maxStackSize, new Item(type), 1));
-                continue;
-            }
-            ret = false;
-        }
-        update();
-        return ret;
-    }
 
     // Adds and removes items
     public int addItems(ItemType type, int amount) {
