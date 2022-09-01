@@ -4,7 +4,6 @@ import net.breamkillerx.textrpg.entity.control.PlayerEntity;
 import net.breamkillerx.textrpg.entity.control.inventory.ItemType;
 import net.breamkillerx.textrpg.util.Util;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -61,11 +60,9 @@ public class Shop {
                 System.out.println("You do not have enough gold!");
         }
 
-        public static ShopOption statUpgrade(int cost, String stat, Function<Integer, Integer> modifyStatFunc, Function<Integer, String> boughtMessageSupplier) {
+        public static ShopOption statUpgrade(int cost, String attribute, Function<Integer, Integer> modifyStatFunc, Function<Integer, String> boughtMessageSupplier) {
             return new ShopOption(cost, player -> {
-                int statValue = player.playerAttributes.get(stat);
-                int newStatValue = modifyStatFunc.apply(statValue);
-                player.playerAttributes.replace(stat, newStatValue);
+                int newStatValue = player.updateAttribute(attribute, modifyStatFunc);
                 return boughtMessageSupplier.apply(newStatValue);
             });
         }

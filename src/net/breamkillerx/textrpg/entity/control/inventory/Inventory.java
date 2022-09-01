@@ -115,6 +115,11 @@ public class Inventory {
     public Stack get(int index) {
         return contents.get(index);
     }
+
+    public void clear() {
+        contents.clear();
+    }
+
     public int getAmount(ItemType type) {
         int count = 0;
         for (Stack content : contents) {

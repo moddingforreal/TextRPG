@@ -38,20 +38,17 @@ public class UserInteractionsHandler {
         }
         save();
     }
-    public void stats(){
-        Map<String, Integer> entries = player.playerAttributes;
+    public void stats() {
         System.out.println(""
-            + "You are level " + entries.get("level") + ".\n"
-            + "You need " + (((entries.get("level")*20)+30)-entries.get("xp")) + " more experience to level up!\n"
-            + "Your Health is " + entries.get("baseHealth") + ".\n"
-            + "Your Attack is " + entries.get("baseAttack") + ".\n"
-            + "You have " + player.inventory.getAmount(ItemType.GOLD) + " gold!\n"
-            + "Press 'A' to go to the beastiary, press any other key to continue.");
+                + "You are level " + player.getAttribute("level") + ".\n"
+                + "You need " + (((player.getAttribute("level") * 20) + 30) - player.getAttribute("xp")) + " more experience to level up!\n"
+                + "Your Health is " + player.getAttribute("baseHealth") + ".\n"
+                + "Your Attack is " + player.getAttribute("baseAttack") + ".\n"
+                + "You have " + player.inventory.getAmount(ItemType.GOLD) + " gold!\n"
+                + "Press 'A' to go to the beastiary, press any other key to continue.");
         char choice = Character.toUpperCase(scanner.next().charAt(0));
-        if (choice =='A'){
-            for (Map.Entry<String, Integer> entry : World.playerKills.entrySet()) {
-                System.out.println("You killed " + entry.getValue() + " " + entry.getKey() + "!");
-            }
+        if (choice == 'A') {
+            player.getStatistics().forEach((id, val) -> System.out.println(id + ": " + val));
         }
     }
 

@@ -1,19 +1,13 @@
 package net.breamkillerx.textrpg.worldinteract;
 
 import net.breamkillerx.textrpg.entity.Enemy;
+import net.breamkillerx.textrpg.entity.EnemyType;
 import net.breamkillerx.textrpg.entity.control.PlayerEntity;
-import net.breamkillerx.textrpg.entity.control.inventory.Inventory;
 import net.breamkillerx.textrpg.entity.control.inventory.ItemType;
 import net.breamkillerx.textrpg.exception.IllegalCombatStateException;
-import net.breamkillerx.textrpg.exception.InvalidGenerationException;
 import net.breamkillerx.textrpg.util.Util;
-import net.breamkillerx.textrpg.world.World;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 import java.util.Scanner;
-import java.util.function.Consumer;
 
 public class Combat{
     Scanner scanner;
@@ -25,61 +19,53 @@ public class Combat{
 
     public void VictorLoot(Enemy currEnemy) {
         double loot = Math.random() * 100;
-        HashMap<String, Integer> player = playerEntity.playerAttributes;
-        Inventory inv = playerEntity.inventory;
-        if (loot >= 0.0 && loot <= 29.0) {
-            inv.addItemsSafe(ItemType.GOLD, 3 * currEnemy.lootMultiplier);
-            System.out.println("You found " + (3 * currEnemy.lootMultiplier) + " gold!  You now have " +
-                    inv.getAmount(ItemType.GOLD) + " gold!");
-        } else if (loot >= 30 && loot <= 49) {
-            inv.addItemsSafe(ItemType.GOLD, 5 * currEnemy.lootMultiplier);
-            System.out.println("You found " + (5 * currEnemy.lootMultiplier) + " gold!  You now have " +
-                    inv.getAmount(ItemType.GOLD) + " gold!");
-        } else if (loot >= 50 && loot <= 59) {
-            inv.addItemsSafe(ItemType.GOLD, 8 * currEnemy.lootMultiplier);
-            System.out.println("You found " + (8 * currEnemy.lootMultiplier) + " gold!  You now have " +
-                    inv.getAmount(ItemType.GOLD) + " gold!");
-        } else if (loot >= 60 && loot <= 64) {
-            inv.addItemsSafe(ItemType.GOLD, 11 * currEnemy.lootMultiplier);
-            System.out.println("You found " + (11 * currEnemy.lootMultiplier) + " gold!  You now have " +
-                    inv.getAmount(ItemType.GOLD) + " gold!");
-        } else if ((loot < 64) || (loot > 100)) {
-            throw new InvalidGenerationException("Loot generation out of bounds!");
-        }
-        playerEntity.playerAttributes = player;
+        int gold;
+        if(loot < 30)
+            gold = 3;
+        else if(loot < 50)
+            gold = 5;
+        else if(loot < 60)
+            gold = 8;
+        else if(loot < 65)
+            gold = 11;
+        else return;
+        int goldFound = gold * currEnemy.getLootMultiplier();
+        playerEntity.inventory.addItems(ItemType.GOLD, goldFound);
+        System.out.println("You found " + goldFound + " gold!  You now have " +
+                playerEntity.inventory.getAmount(ItemType.GOLD) + " gold!");
     }
     public void battle() {
         double enemyGen = Math.random() * 100.0;
-        String enemyName;
+        EnemyType enemyType;
         if (enemyGen < 30)
-            enemyName = "Slime";
+            enemyType = EnemyType.SLIME;
         else if (enemyGen < 55)
-            enemyName = "Zombie";
+            enemyType = EnemyType.ZOMBIE;
         else if (enemyGen < 70)
-            enemyName = "Skeleton";
+            enemyType = EnemyType.SKELETON;
         else if (enemyGen < 80)
-            enemyName = "Ogre";
+            enemyType = EnemyType.OGRE;
         else if (enemyGen < 86)
-            enemyName = "Viper";
+            enemyType = EnemyType.VIPER;
         else if (enemyGen < 91)
-            enemyName = "Undead Warrior";
+            enemyType = EnemyType.UNDEAD_WARRIOR;
         else if (enemyGen < 94)
-            enemyName = "Litch";
+            enemyType = EnemyType.LICH;
         else if (enemyGen < 97)
-            enemyName = "Hydra";
+            enemyType = EnemyType.HYDRA;
         else if (enemyGen < 99)
-            enemyName = "Golem";
+            enemyType = EnemyType.GOLEM;
         else
-            enemyName = "Dragon";
+            enemyType = EnemyType.DRAGON;
         int level = playerEntity.playerAttributes.get("level");
-        Enemy currEnemy = new Enemy(enemyName, level);
+        Enemy currEnemy = new Enemy(enemyType, level);
 
         do {
             boolean repeat;
             do {
                 repeat = false;
                 System.out.println(""
-                        + "Your health (" + playerEntity.playerAttributes.get("currHealth") + ")\t\t\t" + currEnemy.Enemy
+                        + "Your health (" + playerEntity.playerAttributes.get("currHealth") + ")\t\t\t" + currEnemy.getName()
                         + "'s health (" + currEnemy.health + ")\n"
                         + "What do you do?\n"
                         + "A - Attack         \t\t\tB - Power Up\n"
@@ -88,39 +74,33 @@ public class Combat{
                 char choice = Util.readValidInput(scanner, "ABCD");
                 switch (choice) {
                     case 'A':
-                        currEnemy.health -= playerEntity.playerAttributes.get("currAttack");
-                        System.out.println("You hurt " + currEnemy.Enemy + " for " +
-                                playerEntity.playerAttributes.get("currAttack") + " damage!");
-                        System.out.println("\n");
+                        int enemyHealth = currEnemy.health;
+                        currEnemy.health = Math.min(enemyHealth - playerEntity.getAttribute("currAttack"), 0);
+                        System.out.println("You hurt " + currEnemy.getName() + " for " +
+                                (enemyHealth - currEnemy.health) + " damage!\n");
                         break;
                     case 'B':
-                        playerEntity.playerAttributes.replace(
-                                "currAttack", playerEntity.playerAttributes.get("currAttack")
-                                        + playerEntity.playerAttributes.get("level"));
-                        System.out.println("You gained " + playerEntity.playerAttributes.get("level") +
-                                " attack damage!  Your current attack stat is " +
-                                playerEntity.playerAttributes.get("currAttack") + "\n");
+                        int currAttack = playerEntity.updateAttribute("currAttack", _currAttack -> _currAttack + level);
+                        System.out.println("You gained " + level + " attack damage!  Your current attack stat is " + currAttack + "\n");
                         break;
                     case 'C':
-                        if (currEnemy.attack >= 1) {
-                            currEnemy.attack -= playerEntity.playerAttributes.get("level");
-                        } else if (currEnemy.attack == -1) {
-                            currEnemy.attack = 0;
+                        if (currEnemy.attack > 0) {
+                            int enemyAttack = currEnemy.attack;
+                            currEnemy.attack = Math.min(enemyAttack - level, 0);
+                            System.out.println(currEnemy.getName() + " lost " + (enemyAttack - currEnemy.attack)
+                                    + " attack damage!  Their attack stat is " + currEnemy.attack + "\n");
                         }
-                        System.out.println(currEnemy.Enemy + " lost " + playerEntity.playerAttributes.get("level")
-                                + " attack damage!  Their attack stat is " +
-                                currEnemy.attack + "\n");
                         break;
                     case 'D':
-                        if (playerEntity.inventory.getAmount(ItemType.POTION) >= 1) {
-                            System.out.println("You have " + playerEntity.playerAttributes.get("potions") + " potions!"
+                        int potions = playerEntity.inventory.getAmount(ItemType.POTION);
+                        if (potions >= 1) {
+                            System.out.println("You have " + potions + " potions!"
                                     + "  One potion heals you to max health, enter 'A' to use, enter 'B' to cancel.");
                             char potionCheck = Util.readValidInput(scanner, "AB");
                             switch (potionCheck) {
                                 case 'A' -> {
-                                    playerEntity.playerAttributes.replace("currHealth",
-                                            playerEntity.playerAttributes.get("baseHealth"));
-                                    playerEntity.inventory.addItemsSafe(ItemType.POTION, -1);
+                                    playerEntity.putStat("currHealth", playerEntity.getAttribute("baseHealth"));
+                                    playerEntity.inventory.addItems(ItemType.POTION, -1);
                                 }
                                 case 'B' -> {
                                     System.out.println("canceled!");
@@ -139,68 +119,48 @@ public class Combat{
             int choice = (int) (Math.random() * 2.1);
             switch (choice) {
                 case 0 -> {
-                    playerEntity.playerAttributes.replace("currHealth",
-                            playerEntity.playerAttributes.get("currHealth") - currEnemy.attack);
+                    playerEntity.updateAttribute("currHealth", health -> health - currEnemy.attack);
                     System.out.println("You got hurt for " + currEnemy.attack + " damage!\n");
                 }
                 case 1 -> {
-                    currEnemy.attack++;
-                    System.out.println(currEnemy.Enemy + " gained " + playerEntity.playerAttributes.get("level") +
+                    currEnemy.attack += level;
+                    System.out.println(currEnemy.getName() + " gained " + level +
                             " attack damage!  Their current attack stat is " + currEnemy.attack + "\n");
                 }
                 case 2 -> {
-                    if (playerEntity.playerAttributes.get("currAttack") >= 1) {
-                        playerEntity.playerAttributes.replace("currAttack",
-                                playerEntity.playerAttributes.get("currAttack") - 1);
-                    } else {
-                        playerEntity.playerAttributes.replace("currAttack", 0);
+                    int currAttack = playerEntity.getAttribute("currAttack");
+                    if(currAttack > 0) {
+                        int newAttack = Math.min(currAttack - level, 0);
+                        playerEntity.putAttribute("currAttack", newAttack);
+                        System.out.println("You lost " + (currAttack - newAttack) + " attack damage!" +
+                                "  Your attack stat is " + newAttack + "\n");
                     }
-                    System.out.println("You lost " + playerEntity.playerAttributes.get("level") + " attack damage!" +
-                            "  Your attack stat is " + playerEntity.playerAttributes.get("currAttack") + "\n");
                 }
                 default -> throw new IllegalCombatStateException("Switch-case failed... somehow... anyways, error!");
             }
+            playerEntity.isAlive = playerEntity.getAttribute("currHealth") <= 0;
+        } while (playerEntity.isAlive && currEnemy.isAlive());
 
-            if (currEnemy.health <= 0) {
-                playerEntity.isAlive = false;
-            } else playerEntity.isAlive = playerEntity.playerAttributes.get("currHealth") <= 0;
-        } while (playerEntity.isAlive);
         if (currEnemy.health <= 0) {
-            playerEntity.playerAttributes.replace("xp", playerEntity.playerAttributes.get("xp") + 30);
+            int xp = playerEntity.updateAttribute("xp", _xp -> _xp + 30);
             System.out.println("You Win and gain 30 experience!!!  You need " +
-                    ((playerEntity.playerAttributes.get("level") * 20 + 30) - (playerEntity.playerAttributes.get("xp"))) +
-                    " more experience to level up!");
+                    (level * 20 + 30 - xp) + " more experience to level up!");
             VictorLoot(currEnemy);
-            Map<String, Integer> playerKills = World.playerKills;
-            Consumer<String> updateKills = s -> playerKills.replace(s, playerKills.get(s) + 1);
-            switch (currEnemy.enemyId) {
-                case 1 -> updateKills.accept("killsSlime");
-                case 2 -> updateKills.accept("killsZombie");
-                case 3 -> updateKills.accept("killsSkeleton");
-                case 4 -> updateKills.accept("killsOgre");
-                case 5 -> updateKills.accept("killsViper");
-                case 6 -> updateKills.accept("killsUndeadWarrior");
-                case 7 -> updateKills.accept("killsLitch");
-                case 8 -> updateKills.accept("killsGolem");
-                case 9 -> updateKills.accept("killsHydra");
-                case 10 -> updateKills.accept("killsDragon");
-            }
+            playerEntity.updateStat(currEnemy.getKillStatName(), val -> val + 1);
         } else {
             System.out.println("You Lose!!!");
-
+            playerEntity.respawn();
         }
-        if (playerEntity.playerAttributes.get("xp") >= playerEntity.playerAttributes.get("level") * 20 + 30) {
-            playerEntity.playerAttributes.replace("level", playerEntity.playerAttributes.get("level") + 1);
-            playerEntity.playerAttributes.replace("xp", playerEntity.playerAttributes.get("xp") - (
-                    playerEntity.playerAttributes.get("level") * 20 + 30));
+        int xp = playerEntity.getAttribute("xp");
+        if (xp >= level * 20 + 30) {
+            int newLevel = playerEntity.updateAttribute("level", _level -> _level + 1);
+            playerEntity.updateAttribute("xp", _xp -> _xp - (newLevel * 20 + 30));
             System.out.println("You leveled up!!!  Enter 'A' to upgrade health, and enter 'B' to upgrade attack!");
 
             char choice = Util.readValidInput(scanner, "AB");
             switch (choice) {
-                case 'A' -> playerEntity.playerAttributes.replace("baseHealth",
-                        playerEntity.playerAttributes.get("baseHealth") + 3);
-                case 'B' -> playerEntity.playerAttributes.replace("baseAttack",
-                        playerEntity.playerAttributes.get("baseAttack") + 1);
+                case 'A' -> playerEntity.updateAttribute("baseHealth", baseHealth -> baseHealth + 3);
+                case 'B' -> playerEntity.updateAttribute("baseAttack", baseAttack -> baseAttack + 1);
             }
         }
     }
